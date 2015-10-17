@@ -1,0 +1,45 @@
+---
+- name: Include variables based on OS family
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Set timezone to UTC
+  file:
+    src: "/usr/share/zoneinfo/UTC"
+    dest: /etc/localtime
+    state: link
+    force: yes
+
+- name: Install NTP (RHEL/CentOS)
+  yum: name=ntp state=installed
+  when: ansible_os_family == 'RedHat'
+
+- name: Install NTP (Debian/Ubuntu)
+  apt: name=ntp state=installed
+  when: ansible_os_family == 'Debian'
+
+- name: Deploy NTP configuration
+  template:
+    src: ntp.conf.j2
+    dest: /etc/ntp.conf
+  register: ntp_config
+
+- name: Restart NTP service and enable at boot
+  service:
+    name: "{{ ntp_daemon }}"
+    state: restarted
+    enabled: yes
+  when: ntp_config.changed and ntp_enable
+
+- name: Ensure NTP service is started and enable it at boot
+  service:
+    name: "{{ ntp_daemon }}"
+    state: started
+    enabled: yes
+  when: ntp_enable
+
+- name: Stop NTP service and disable it at boot
+  service:
+    name: "{{ ntp_daemon }}"
+    state: stoppoed
+    enabled: no
+  when: not ntp_enable
