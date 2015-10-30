@@ -40,6 +40,6 @@
 - name: Stop NTP service and disable it at boot
   service:
     name: "{{ ntp_daemon }}"
-    state: stoppoed
+    state: stopped
     enabled: no
   when: not ntp_enable
