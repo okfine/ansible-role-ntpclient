@@ -14,7 +14,11 @@
   when: ansible_os_family == 'RedHat'
 
 - name: Install NTP (Debian/Ubuntu)
-  apt: name=ntp state=installed
+  apt:
+    name: ntp
+    state: installed
+    update_cache: yes
+    cache_valid_time: 3600
   when: ansible_os_family == 'Debian'
 
 - name: Deploy NTP configuration
