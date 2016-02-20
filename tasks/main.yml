@@ -10,7 +10,9 @@
     force: yes
 
 - name: Install NTP (RHEL/CentOS)
-  yum: name=ntp state=installed
+  yum: 
+    name: ntp
+    state: installed
   when: ansible_os_family == 'RedHat'
 
 - name: Install NTP (Debian/Ubuntu)
